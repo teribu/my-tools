@@ -1,6 +1,6 @@
 local HttpService = game:GetService("HttpService")
 local SaveManager = {
-    Folder = "Teddy",
+    Folder = "Library",
     Library = nil,
     Data = {}
 }
@@ -59,6 +59,10 @@ function SaveManager:init(Library)
         return
     end
     SaveManager.Library = Library
+
+    if type(Library.Name) == "string" and Library.Name then
+        SaveManager.Folder = Library.Name
+    end
 
     local initializing = true
 

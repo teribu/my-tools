@@ -60,7 +60,7 @@ function SaveManager:init(Library)
     end
     SaveManager.Library = Library
 
-    if type(Library.Name) == "string" and Library.Name then
+    if Library.Name and type(Library.Name) == "string" then
         SaveManager.Folder = Library.Name
     end
 

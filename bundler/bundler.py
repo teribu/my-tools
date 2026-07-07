@@ -85,6 +85,7 @@ content += f"""
 local Modules = {{}}
 local {NAME} = Instance.new("ModuleScript")
 {NAME}.Name = "{NAME}"
+
 """
 
 
@@ -105,7 +106,7 @@ def generate_map(tree, parent):
             )
 
             content += f'local {file} = Instance.new("{kind}", {parent})\n'
-            content += f'{file}.Name = "{source[1]}"\n'
+            content += f'{file}.Name = "{source[1]}"\n\n'
             generate_map(source[2], file)
         else:
             if source[1] == "init":
@@ -113,7 +114,7 @@ def generate_map(tree, parent):
             else:
                 content += f"local {file} = Instance.new('ModuleScript', {parent})\n"
                 content += f'{file}.Name = "{source[1]}"\n'
-                content += f"Modules[{file}] = {generate_source(source[2])}\n"
+                content += f"Modules[{file}] = {generate_source(source[2])}\n\n"
 
 
 generate_map(tree, NAME)

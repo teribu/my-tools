@@ -67,20 +67,25 @@ def build_tree(folder):
     for item in sorted(Path(folder).iterdir()):
         if item.is_dir():
             content += f"Folder: {item.name}\n"
-            tree[next_var()] = ["Folder", item.name, build_tree(item)]
+            tree[next_var()] = [
+                "Folder",
+                item.name,
+                build_tree(item),
+                f"Folder: {item.name}",
+            ]
         elif item.suffix in SOURCE_EXTENSIONS:
             content += f"{folder}\\{item.stem}\n"
             tree[next_var()] = [
                 "ModuleScript",
                 item.stem,
                 item.read_text(encoding="utf-8"),
+                f"{folder}\\{item.stem}\n",
             ]
     return tree
 
 
 tree = build_tree(INPUT)
-content += f"""
-]]
+content += f"""]]
 
 local Modules = {{}}
 local {NAME} = Instance.new("ModuleScript")
@@ -98,6 +103,7 @@ def generate_source(source):
 def generate_map(tree, parent):
     global content
     for file, source in tree.items():
+        content += f"-- {source[3]}"
         if source[0] == "Folder":
             kind = (
                 "ModuleScript"
@@ -105,7 +111,7 @@ def generate_map(tree, parent):
                 else "Folder"
             )
 
-            content += f'local {file} = Instance.new("{kind}", {parent})\n'
+            content += f'\nlocal {file} = Instance.new("{kind}", {parent})\n'
             content += f'{file}.Name = "{source[1]}"\n\n'
             generate_map(source[2], file)
         else:
@@ -114,13 +120,12 @@ def generate_map(tree, parent):
             else:
                 content += f"local {file} = Instance.new('ModuleScript', {parent})\n"
                 content += f'{file}.Name = "{source[1]}"\n'
-                content += f"\nModules[{file}] = {generate_source(source[2])}\n\n"
+                content += f"\nModules[{file}] = {generate_source(source[2])}\n"
 
 
 generate_map(tree, NAME)
 
-content += f"""
-local Cache = {{}}
+content += f"""local Cache = {{}}
 local Loading = {{}}
 local OldRequire = require
 

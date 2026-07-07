@@ -62,6 +62,7 @@ function ThemeManager:init(Library)
     end
 
     ThemeManager:RefreshList()
+    ThemeManager.Library:SetTheme(ThemeManager.Library.Theme)
 end
 
 return ThemeManager

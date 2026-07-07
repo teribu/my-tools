@@ -1,16 +1,35 @@
 local HttpService = game:GetService("HttpService")
 local SaveManager = {
     Folder = "Library",
+    Username = game:GetService("Players").LocalPlayer.Name,
     Library = nil,
     Data = {}
 }
 
-function SaveManager:Save()
+function SaveManager:EnsureFolder(onlyCheck)
+    if onlyCheck then
+        return isfolder(self.Folder) and isfolder(self.Folder .. "/Configs") and isfolder(self.Folder .. "/Configs/" .. self.Username)
+    end
+
     if not isfolder(self.Folder) then
         makefolder(self.Folder)
     end
 
-    local path = self.Folder .. "/config.json"
+    local configsFolder = self.Folder .. "/Configs"
+    if not isfolder(configsFolder) then
+        makefolder(configsFolder)
+    end
+
+    local userFolder = configsFolder .. "/" .. self.Username
+    if not isfolder(userFolder) then
+        makefolder(userFolder)
+    end
+
+    return userFolder
+end
+
+function SaveManager:Save()
+    local path = self:EnsureFolder() .. "/config.json"
     local ok, encoded = pcall(HttpService.JSONEncode, HttpService, self.Data)
 
     if not ok then
@@ -26,11 +45,11 @@ function SaveManager:Load()
         return
     end
 
-    if not isfolder(self.Folder) then
+    if not self:EnsureFolder(true) then
         return
     end
 
-    local path = self.Folder .. "/config.json"
+    local path = self.Folder .. "/Configs/" .. self.Username .. "/config.json"
     if not isfile(path) then
         return
     end
@@ -38,7 +57,7 @@ function SaveManager:Load()
     local ok, data = pcall(HttpService.JSONDecode, HttpService, readfile(path))
 
     if not ok then
-    warn("[ SaveManager ] Invalid config")
+        warn("[ SaveManager ] Invalid config")
         return
     end
 
@@ -58,6 +77,7 @@ function SaveManager:init(Library)
         warn("[ SaveManager ] SaveManager is already initialized")
         return
     end
+
     SaveManager.Library = Library
 
     if Library.Name and type(Library.Name) == "string" then
@@ -79,6 +99,7 @@ function SaveManager:init(Library)
     end
 
     initializing = false
+    SaveManager:Load()
     return true
 end
 

@@ -110,11 +110,11 @@ def generate_map(tree, parent):
             generate_map(source[2], file)
         else:
             if source[1] == "init":
-                content += f"Modules[{parent}] = {generate_source(source[2])}\n"
+                content += f"\nModules[{parent}] = {generate_source(source[2])}\n"
             else:
                 content += f"local {file} = Instance.new('ModuleScript', {parent})\n"
                 content += f'{file}.Name = "{source[1]}"\n'
-                content += f"Modules[{file}] = {generate_source(source[2])}\n\n"
+                content += f"\nModules[{file}] = {generate_source(source[2])}\n\n"
 
 
 generate_map(tree, NAME)

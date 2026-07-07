@@ -41,7 +41,7 @@ for arg in sys.argv[1:]:
 
 NAME = args.get("name", "Project")
 INPUT = args.get("input", "src")
-OUTPUT = args.get("output", f"{NAME}.lua")
+OUTPUT = args.get("output", "main.lua")
 SOURCE_EXTENSIONS = {
     ".lua",
     ".luau",
